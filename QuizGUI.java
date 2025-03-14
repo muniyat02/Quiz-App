@@ -1,8 +1,28 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import javax.swing.*;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class QuizGUI {
 
@@ -241,31 +261,42 @@ public class QuizGUI {
         frame.repaint();
     }
 
-    private static void takeQuiz(JFrame frame, String subject) {
+    private static void takeQuiz(JFrame frame, String subjectName) {
         JPanel quizPanel = new JPanel();
         quizPanel.setLayout(new BoxLayout(quizPanel, BoxLayout.Y_AXIS));
-
-        List<Question> questions = QuizData.getQuestions(subject);
+    
+        Subject subject = QuizData.getSubject(subjectName);  // Get the specific subject
+        if (subject == null) {
+            JOptionPane.showMessageDialog(frame, "Subject not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
         int score = 0;
-
-        for (Question q : questions) {
+        List<String> questions = subject.getQuestions();
+        List<List<String>> options = subject.getOptions();
+        List<String> correctAnswers = subject.getCorrectAnswers();
+    
+        for (int i = 0; i < questions.size(); i++) {
+            String question = questions.get(i);
+            List<String> optionList = options.get(i);
+            String correctAnswer = correctAnswers.get(i);
+    
             String selectedAnswer = (String) JOptionPane.showInputDialog(
                     frame,
-                    q.getQuestionText(),
-                    "Quiz - " + subject,
+                    question,
+                    "Quiz - " + subjectName,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    q.getOptions().toArray(),
-                    q.getOptions().get(0));
-
-            if (selectedAnswer != null && selectedAnswer.equals(q.getCorrectAnswer())) {
+                    optionList.toArray(),
+                    optionList.get(0));  // Initial selected option
+    
+            if (selectedAnswer != null && selectedAnswer.equals(correctAnswer)) {
                 score++;
             }
         }
-
-        leaderboard.put(STUDENT_USERNAME, score);
-        JOptionPane.showMessageDialog(frame, "Your Score: " + score, "Quiz Completed", JOptionPane.INFORMATION_MESSAGE);
+    
     }
+    
 
     private static JButton createStyledButton(String text) {
         JButton button = new JButton(text);
