@@ -235,7 +235,6 @@ public class QuizGUI {
         List<String> questions = subject.getQuestions();
         List<List<String>> options = subject.getOptions();
         List<String> correctAnswers = subject.getCorrectAnswers();
-
         for (int i = 0; i < questions.size(); i++) {
             String question = questions.get(i);
             List<String> optionList = options.get(i);
@@ -271,6 +270,7 @@ public class QuizGUI {
         });
         return backButton;
     }
+    
 
     private static JButton createStyledButton(String text) {
         JButton button = new JButton(text);
