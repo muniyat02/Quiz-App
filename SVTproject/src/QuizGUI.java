@@ -174,31 +174,40 @@ public class QuizGUI {
         frame.repaint();
     }
 
-    private static void takeQuiz(JFrame frame, String subject) {
+    private static void takeQuiz(JFrame frame, String subjectName) {
         JPanel quizPanel = new JPanel();
         quizPanel.setLayout(new BoxLayout(quizPanel, BoxLayout.Y_AXIS));
-
-        List<Question> questions = QuizData.getQuestions(subject);
+    
+        Subject subject = QuizData.getSubject(subjectName); // Assuming a method that returns a Subject object
+        if (subject == null) {
+            JOptionPane.showMessageDialog(frame, "Subject not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        List<String> questions = subject.getQuestions();
+        List<List<String>> options = subject.getOptions();
+        List<String> correctAnswers = subject.getCorrectAnswers();
         int score = 0;
-
-        for (Question q : questions) {
+        
+        for (int i = 0; i < questions.size(); i++) {
             String selectedAnswer = (String) JOptionPane.showInputDialog(
                     frame,
-                    q.getQuestionText(),
-                    "Quiz - " + subject,
+                    questions.get(i),
+                    "Quiz - " + subjectName,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    q.getOptions().toArray(),
-                    q.getOptions().get(0));
-
-            if (selectedAnswer != null && selectedAnswer.equals(q.getCorrectAnswer())) {
+                    options.get(i).toArray(),
+                    options.get(i).get(0));
+    
+            if (selectedAnswer != null && selectedAnswer.equals(correctAnswers.get(i))) {
                 score++;
             }
         }
-
+        
         leaderboard.put(STUDENT_USERNAME, score);
         JOptionPane.showMessageDialog(frame, "Your Score: " + score, "Quiz Completed", JOptionPane.INFORMATION_MESSAGE);
     }
+    
 
     private static JButton createStyledButton(String text) {
         JButton button = new JButton(text);
